@@ -1,1 +1,517 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-commerce Agent Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styless.css">
+    <script src="script.js"></script>
+</head>
+<body>
+    <!-- Authentication Screen -->
+    <div id="authScreen" class="auth-container">
+        <div class="auth-card">
+            <h2><i class="fas fa-store"></i> Agent Dashboard</h2>
+            <div class="auth-tabs">
+                <div class="auth-tab active" id="loginTab">Login</div>
+                <div class="auth-tab" id="signupTab">Sign Up</div>
+            </div>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label><i class="fas fa-envelope"></i> Email</label>
+                    <input type="email" id="loginEmail" class="form-control" placeholder="Enter your email" required>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-lock"></i> Password</label>
+                    <input type="password" id="loginPassword" class="form-control" placeholder="Enter your password" required>
+                </div>
+                <button type="submit" class="btn">
+                    <i class="fas fa-sign-in-alt"></i> Login
+                </button>
+            </form>
+            <form id="signupForm" class="hidden">
+                <div class="form-group">
+                    <label><i class="fas fa-user"></i> Full Name</label>
+                    <input type="text" id="signupName" class="form-control" placeholder="Enter your full name" required>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-envelope"></i> Email</label>
+                    <input type="email" id="signupEmail" class="form-control" placeholder="Enter your email" required>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-lock"></i> Password</label>
+                    <input type="password" id="signupPassword" class="form-control" placeholder="Create a password (min. 8 characters)" required>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-id-badge"></i> Role</label>
+                    <select id="signupRole" class="form-control" required>
+                        <option value="">Select a role</option>
+                        <option value="customer">Customer</option>
+                        <option value="agent">Agent</option>
+                        <option value="admin">Admin</option>
+                    </select>
+                </div>
+                <div class="form-group hidden" id="departmentGroup">
+                    <label><i class="fas fa-building"></i> Department</label>
+                    <select id="signupDepartment" class="form-control">
+                        <option value="electronics">Electronics</option>
+                        <option value="fashion">Fashion</option>
+                        <option value="home">Home & Kitchen</option>
+                        <option value="sports">Sports & Outdoors</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn">
+                    <i class="fas fa-user-plus"></i> Sign Up
+                </button>
+            </form>
+            <div id="authMessage" style="margin-top: 20px; text-align: center;"></div>
+        </div>
+    </div>
+    
+    <!-- Main Dashboard -->
+    <div id="dashboard" class="container hidden">
+        <div class="sidebar" id="sidebar">
+            <div class="logo">
+                <h2><i class="fas fa-store"></i> Dashboard</h2>
+                <button id="themeToggle" class="theme-toggle">
+                    <i class="fas fa-moon"></i>
+                </button>
+            </div>
+            <ul class="nav-links">
+                <li class="active" data-screen="dashboard">
+                    <i class="fas fa-home"></i> Dashboard
+                </li>
+                <li data-screen="productManagement" class="admin-agent-only">
+                    <i class="fas fa-box"></i> Products
+                </li>
+                <li data-screen="productPublisher" class="admin-agent-only">
+                    <i class="fas fa-upload"></i> Publisher
+                </li>
+                <li data-screen="inventoryManager" class="admin-agent-only">
+                    <i class="fas fa-warehouse"></i> Inventory
+                </li>
+                <li data-screen="customerManagement" class="admin-only">
+                    <i class="fas fa-users"></i> Customers
+                </li>
+                <li data-screen="categoryManager" class="admin-agent-only">
+                    <i class="fas fa-tags"></i> Categories
+                </li>
+                <li data-screen="orderManager" class="admin-agent-only">
+                    <i class="fas fa-shopping-cart"></i> Orders
+                </li>
+                <li data-screen="analytics" class="admin-only">
+                    <i class="fas fa-chart-bar"></i> Analytics
+                </li>
+                <li data-screen="activityLogs" class="admin-only">
+                    <i class="fas fa-history"></i> Activity
+                </li>
+                <li id="logoutBtn">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </li>
+            </ul>
+        </div>
+        
+        <div class="main-content">
+            <div class="header">
+                <h1 id="screenTitle">Dashboard</h1>
+                <div class="user-info">
+                    <div class="user-avatar" id="userAvatar">JD</div>
+                    <div>
+                        <div id="userName" style="font-weight: 700; font-size: 16px;">John Doe</div>
+                        <div id="userRole" style="font-size: 13px; color: var(--gray);">E-commerce Agent</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="loadingSpinner" class="loading-spinner hidden">
+                <div class="spinner"></div>
+                <p>Loading...</p>
+            </div>
+            
+            <!-- Dashboard Screen -->
+            <div id="dashboardScreen" class="screen">
+                <div class="stats-container" id="dashboardStats">
+                    <!-- Sample Stats -->
+                    <div class="stat-card primary">
+                        <div class="stat-icon"><i class="fas fa-box"></i></div>
+                        <div class="stat-value">248</div>
+                        <div class="stat-label">Total Products</div>
+                        <div class="stat-change positive">
+                            <i class="fas fa-arrow-up"></i> 12% from last month
+                        </div>
+                    </div>
+                    <div class="stat-card success">
+                        <div class="stat-icon"><i class="fas fa-shopping-cart"></i></div>
+                        <div class="stat-value">1,352</div>
+                        <div class="stat-label">Total Orders</div>
+                        <div class="stat-change positive">
+                            <i class="fas fa-arrow-up"></i> 8% from last month
+                        </div>
+                    </div>
+                    <div class="stat-card warning">
+                        <div class="stat-icon"><i class="fas fa-exclamation-triangle"></i></div>
+                        <div class="stat-value">23</div>
+                        <div class="stat-label">Low Stock Items</div>
+                        <div class="stat-change negative">
+                            <i class="fas fa-arrow-down"></i> Requires attention
+                        </div>
+                    </div>
+                    <div class="stat-card danger">
+                        <div class="stat-icon"><i class="fas fa-clock"></i></div>
+                        <div class="stat-value">47</div>
+                        <div class="stat-label">Pending Approvals</div>
+                        <div class="stat-change positive">
+                            <i class="fas fa-arrow-down"></i> 15% less than yesterday
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="content-section">
+                    <div class="section-header">
+                        <h2><i class="fas fa-clock"></i> Recent Activity</h2>
+                    </div>
+                    <div id="recentActivityList">
+                        <div class="activity-item">
+                            <div class="activity-icon"><i class="fas fa-plus"></i></div>
+                            <div class="activity-content">
+                                <div><strong>New Product Added:</strong> Wireless Bluetooth Headphones</div>
+                                <div class="activity-time">2 hours ago</div>
+                            </div>
+                        </div>
+                        <div class="activity-item">
+                            <div class="activity-icon"><i class="fas fa-check"></i></div>
+                            <div class="activity-content">
+                                <div><strong>Product Approved:</strong> Smart Watch Pro</div>
+                                <div class="activity-time">5 hours ago</div>
+                            </div>
+                        </div>
+                        <div class="activity-item">
+                            <div class="activity-icon"><i class="fas fa-sync"></i></div>
+                            <div class="activity-content">
+                                <div><strong>Inventory Updated:</strong> 50 units added to Gaming Laptop</div>
+                                <div class="activity-time">1 day ago</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="content-section" id="lowStockSection">
+                    <div class="section-header">
+                        <h2><i class="fas fa-exclamation-triangle"></i> Low Stock Alert</h2>
+                    </div>
+                    <div id="lowStockProducts">
+                        <div class="inventory-table-container">
+                            <table class="inventory-table">
+                                <thead>
+                                    <tr>
+                                        <th>Product</th>
+                                        <th>SKU</th>
+                                        <th>Current Stock</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Wireless Mouse</td>
+                                        <td>WM-001</td>
+                                        <td>8 units</td>
+                                        <td><span class="stock-badge stock-low">Low Stock</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>USB-C Cable</td>
+                                        <td>UC-042</td>
+                                        <td>0 units</td>
+                                        <td><span class="stock-badge stock-out">Out of Stock</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Phone Case</td>
+                                        <td>PC-125</td>
+                                        <td>5 units</td>
+                                        <td><span class="stock-badge stock-low">Low Stock</span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Product Management Screen -->
+            <div id="productManagementScreen" class="screen hidden">
+                <div class="content-section">
+                    <div class="section-header">
+                        <h2><i class="fas fa-box"></i> Product Management</h2>
+                        <button class="btn" id="addProductBtn">
+                            <i class="fas fa-plus"></i> Add Product
+                        </button>
+                    </div>
+                    
+                    <div class="product-filters">
+                        <button class="filter-btn active" data-filter="all">All Products</button>
+                        <button class="filter-btn" data-filter="draft">Draft</button>
+                        <button class="filter-btn" data-filter="pending_approval">Pending</button>
+                        <button class="filter-btn" data-filter="approved">Approved</button>
+                        <button class="filter-btn" data-filter="published">Published</button>
+                        <button class="filter-btn" data-filter="rejected">Rejected</button>
+                    </div>
+                    
+                    <div class="product-grid" id="productGrid">
+                        <!-- Sample Products -->
+                        <div class="product-card">
+                            <div class="product-image"><i class="fas fa-laptop"></i></div>
+                            <div class="product-info">
+                                <div class="product-name">Gaming Laptop Pro</div>
+                                <div class="product-price">$1,299.99</div>
+                                <div class="product-meta">
+                                    <span class="product-status status-published">Published</span>
+                                    <span style="color: var(--gray); font-size: 12px;">SKU: LP-001</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="product-card">
+                            <div class="product-image"><i class="fas fa-headphones"></i></div>
+                            <div class="product-info">
+                                <div class="product-name">Wireless Headphones</div>
+                                <div class="product-price">$199.99</div>
+                                <div class="product-meta">
+                                    <span class="product-status status-pending_approval">Pending</span>
+                                    <span style="color: var(--gray); font-size: 12px;">SKU: HP-042</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="product-card">
+                            <div class="product-image"><i class="fas fa-mobile-alt"></i></div>
+                            <div class="product-info">
+                                <div class="product-name">Smartphone X</div>
+                                <div class="product-price">$899.99</div>
+                                <div class="product-meta">
+                                    <span class="product-status status-approved">Approved</span>
+                                    <span style="color: var(--gray); font-size: 12px;">SKU: SP-128</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Product Publisher Screen -->
+            <div id="productPublisherScreen" class="screen hidden">
+                <div class="content-section">
+                    <div class="section-header">
+                        <h2><i class="fas fa-upload"></i> Product Publisher</h2>
+                    </div>
+                    <p style="margin-bottom: 25px; color: var(--gray); font-size: 14px;">
+                        <i class="fas fa-info-circle"></i> Drag products between columns to update their publishing status
+                    </p>
+                    
+                    <div class="drop-zones">
+                        <div class="drop-zone draft" data-status="draft">
+                            <div class="zone-header">
+                                <h3><i class="fas fa-file"></i> Draft Products</h3>
+                                <p>Work in progress</p>
+                            </div>
+                            <div id="draftProducts" class="product-list">
+                                <div class="draggable-product" draggable="true">
+                                    <strong>Smart Watch</strong>
+                                    <div style="font-size: 12px; color: var(--gray); margin-top: 4px;">SKU: SW-099</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="drop-zone pending" data-status="pending_approval">
+                            <div class="zone-header">
+                                <h3><i class="fas fa-clock"></i> Pending Approval</h3>
+                                <p>Awaiting review</p>
+                            </div>
+                            <div id="pendingProducts" class="product-list">
+                                <div class="draggable-product" draggable="true">
+                                    <strong>Wireless Headphones</strong>
+                                    <div style="font-size: 12px; color: var(--gray); margin-top: 4px;">SKU: HP-042</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="drop-zone approved" data-status="approved">
+                            <div class="zone-header">
+                                <h3><i class="fas fa-check-circle"></i> Approved</h3>
+                                <p>Ready to publish</p>
+                            </div>
+                            <div id="approvedProducts" class="product-list">
+                                <div class="draggable-product" draggable="true">
+                                    <strong>Smartphone X</strong>
+                                    <div style="font-size: 12px; color: var(--gray); margin-top: 4px;">SKU: SP-128</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="drop-zone published" data-status="published">
+                            <div class="zone-header">
+                                <h3><i class="fas fa-globe"></i> Published</h3>
+                                <p>Live on store</p>
+                            </div>
+                            <div id="publishedProducts" class="product-list">
+                                <div class="draggable-product" draggable="true">
+                                    <strong>Gaming Laptop Pro</strong>
+                                    <div style="font-size: 12px; color: var(--gray); margin-top: 4px;">SKU: LP-001</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Inventory Manager Screen -->
+            <div id="inventoryManagerScreen" class="screen hidden">
+                <div class="content-section">
+                    <div class="section-header">
+                        <h2><i class="fas fa-warehouse"></i> Inventory Management</h2>
+                        <button class="btn" id="bulkUpdateBtn">
+                            <i class="fas fa-edit"></i> Bulk Update
+                        </button>
+                    </div>
+                    
+                    <div class="inventory-filters">
+                        <div class="search-box">
+                            <i class="fas fa-search"></i>
+                            <input type="text" id="inventorySearch" class="form-control" placeholder="Search products by name or SKU...">
+                        </div>
+                        <div class="filter-options">
+                            <select id="stockFilter" class="form-control">
+                                <option value="all">All Stock Levels</option>
+                                <option value="low">Low Stock</option>
+                                <option value="out">Out of Stock</option>
+                                <option value="healthy">Healthy Stock</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="inventory-table-container">
+                        <table class="inventory-table">
+                            <thead>
+                                <tr>
+                                    <th>Product</th>
+                                    <th>SKU</th>
+                                    <th>Current Stock</th>
+                                    <th>Low Stock Threshold</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="inventoryTableBody">
+                                <tr>
+                                    <td><strong>Gaming Laptop Pro</strong></td>
+                                    <td>LP-001</td>
+                                    <td>45 units</td>
+                                    <td>10 units</td>
+                                    <td><span class="stock-badge stock-healthy">Healthy</span></td>
+                                    <td>
+                                        <button class="action-btn primary"><i class="fas fa-edit"></i></button>
+                                        <button class="action-btn success"><i class="fas fa-plus"></i></button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Wireless Mouse</strong></td>
+                                    <td>WM-001</td>
+                                    <td>8 units</td>
+                                    <td>15 units</td>
+                                    <td><span class="stock-badge stock-low">Low Stock</span></td>
+                                    <td>
+                                        <button class="action-btn primary"><i class="fas fa-edit"></i></button>
+                                        <button class="action-btn success"><i class="fas fa-plus"></i></button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>USB-C Cable</strong></td>
+                                    <td>UC-042</td>
+                                    <td>0 units</td>
+                                    <td>20 units</td>
+                                    <td><span class="stock-badge stock-out">Out of Stock</span></td>
+                                    <td>
+                                        <button class="action-btn primary"><i class="fas fa-edit"></i></button>
+                                        <button class="action-btn success"><i class="fas fa-plus"></i></button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Customer Management Screen -->
+            <div id="customerManagementScreen" class="screen hidden">
+                <div class="content-section">
+                    <div class="section-header">
+                        <h2><i class="fas fa-users"></i> Customer Management</h2>
+                        <button class="btn"><i class="fas fa-user-plus"></i> Add Customer</button>
+                    </div>
+                    <div class="empty-state">
+                        <i class="fas fa-users"></i>
+                        <h3>Customer Management</h3>
+                        <p>Customer management features will be implemented here</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Category Manager Screen -->
+            <div id="categoryManagerScreen" class="screen hidden">
+                <div class="content-section">
+                    <div class="section-header">
+                        <h2><i class="fas fa-tags"></i> Category Management</h2>
+                        <button class="btn"><i class="fas fa-plus"></i> Add Category</button>
+                    </div>
+                    <div class="empty-state">
+                        <i class="fas fa-tags"></i>
+                        <h3>Category Management</h3>
+                        <p>Category management features will be implemented here</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Order Manager Screen -->
+            <div id="orderManagerScreen" class="screen hidden">
+                <div class="content-section">
+                    <div class="section-header">
+                        <h2><i class="fas fa-shopping-cart"></i> Order Management</h2>
+                        <button class="btn"><i class="fas fa-filter"></i> Filter Orders</button>
+                    </div>
+                    <div class="empty-state">
+                        <i class="fas fa-shopping-cart"></i>
+                        <h3>Order Management</h3>
+                        <p>Order management features will be implemented here</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Analytics Screen -->
+            <div id="analyticsScreen" class="screen hidden">
+                <div class="content-section">
+                    <div class="section-header">
+                        <h2><i class="fas fa-chart-bar"></i> Analytics & Reports</h2>
+                        <button class="btn"><i class="fas fa-download"></i> Export Report</button>
+                    </div>
+                    <div class="empty-state">
+                        <i class="fas fa-chart-bar"></i>
+                        <h3>Analytics Dashboard</h3>
+                        <p>Analytics and reporting features will be implemented here</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Activity Logs Screen -->
+            <div id="activityLogsScreen" class="screen hidden">
+                <div class="content-section">
+                    <div class="section-header">
+                        <h2><i class="fas fa-history"></i> Activity Logs</h2>
+                        <button class="btn"><i class="fas fa-sync"></i> Refresh</button>
+                    </div>
+                    <div class="empty-state">
+                        <i class="fas fa-history"></i>
+                        <h3>Activity Logs</h3>
+                        <p>Activity logs and audit trail features will be implemented here</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
